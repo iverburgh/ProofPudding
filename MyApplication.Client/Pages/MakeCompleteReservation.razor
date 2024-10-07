@@ -1,4 +1,10 @@
 ﻿@page "/makecompletereservation"
+
+
+
+@inject IApplicationInsights ApplicationInsights
+@using BlazorApplicationInsights.Interfaces
+@using BlazorApplicationInsights.Models
 @using FluentValidation
 <MudCard>
     <MudForm Model="@model" @ref="@form" Validation="@(orderValidator.ValidateValue)" ValidationDelay="0">
@@ -86,16 +92,28 @@
         {
             // var totalTimeInSeconds = (DateTimeOffset.UtcNow - _dateTimeOfInit).TotalSeconds;
             // _logger.LogInformation("MakeCompleteReservation - SessionGuid:{SessionGuid}: TotalTimeInSeconds: \"{TotalSessionTimeInSeconds}\"", _sessionGuid, totalTimeInSeconds);
+            await ApplicationInsights.StopTrackEvent("MakeCompleteReservation Valid");
             NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            await ApplicationInsights.TrackEvent(new EventTelemetry() { Name = "MakeCompleteReservation Invalid" });
         }
     }
 
     protected override void OnInitialized()
     {
         model = new OrderModel();
+        ApplicationInsights.StartTrackPage("MakeCompleteReservation");
+        ApplicationInsights.StartTrackEvent("MakeCompleteReservation Valid");
         // _sessionGuid = Guid.NewGuid();
         // _dateTimeOfInit = DateTimeOffset.UtcNow;
         // _logger.LogInformation("MakeCompleteReservation - SessionGuid:{SessionGuid}: Make complete reservation started at {SessionFinished} for client with IP Address: {IpAddress}", _sessionGuid, _dateTimeOfInit, "123456");
+    }
+
+    public void Dispose()
+    {
+        ApplicationInsights.StopTrackPage("MakeCompleteReservation");
     }
 
 
