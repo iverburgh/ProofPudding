@@ -1,0 +1,17 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Hello, slot @(IsVersionB ? "B" : "A")</MudText>
+
+@code
+{
+    protected bool IsVersionB { get; set; }
+
+    [Inject] private IConfiguration _configuration { get; set; }
+
+    protected override void OnInitialized()
+    {
+        IsVersionB = Convert.ToBoolean(_configuration["VersionB"]);
+    }
+}
