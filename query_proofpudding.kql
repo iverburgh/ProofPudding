@@ -1,0 +1,8 @@
+customEvents
+| extend Duration = todouble(customDimensions.duration) / 1000
+| summarize avg(Duration) by name
+| render barchart 
+
+customEvents
+| extend Duration = todouble(customDimensions.duration) / 1000
+| summarize count(), avg(Duration), max(Duration), min(Duration) by name

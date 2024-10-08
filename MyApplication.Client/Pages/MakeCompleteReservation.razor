@@ -1,7 +1,5 @@
 ﻿@page "/makecompletereservation"
 
-
-
 @inject IApplicationInsights ApplicationInsights
 @using BlazorApplicationInsights.Interfaces
 @using BlazorApplicationInsights.Models
@@ -84,38 +82,27 @@
 
     protected OrderDetailsModelFluentValidator orderDetailsValidator = new OrderDetailsModelFluentValidator();
 
+    protected override void OnInitialized()
+    {
+        model = new OrderModel();
+        ApplicationInsights.StartTrackEvent("MakeCompleteReservation Valid");
+    }
+    
     protected async Task Submit()
     {
         await form.Validate();
 
         if (form.IsValid)
         {
-            // var totalTimeInSeconds = (DateTimeOffset.UtcNow - _dateTimeOfInit).TotalSeconds;
-            // _logger.LogInformation("MakeCompleteReservation - SessionGuid:{SessionGuid}: TotalTimeInSeconds: \"{TotalSessionTimeInSeconds}\"", _sessionGuid, totalTimeInSeconds);
             await ApplicationInsights.StopTrackEvent("MakeCompleteReservation Valid");
             NavigationManager.NavigateTo("/");
         }
         else
         {
-            await ApplicationInsights.TrackEvent(new EventTelemetry() { Name = "MakeCompleteReservation Invalid" });
+            await ApplicationInsights.StopTrackEvent("MakeCompleteReservation Valid", new Dictionary<string, object?>() { { "invalid", null } });
+            await ApplicationInsights.StartTrackEvent("MakeCompleteReservation Valid");
         }
     }
-
-    protected override void OnInitialized()
-    {
-        model = new OrderModel();
-        ApplicationInsights.StartTrackPage("MakeCompleteReservation");
-        ApplicationInsights.StartTrackEvent("MakeCompleteReservation Valid");
-        // _sessionGuid = Guid.NewGuid();
-        // _dateTimeOfInit = DateTimeOffset.UtcNow;
-        // _logger.LogInformation("MakeCompleteReservation - SessionGuid:{SessionGuid}: Make complete reservation started at {SessionFinished} for client with IP Address: {IpAddress}", _sessionGuid, _dateTimeOfInit, "123456");
-    }
-
-    public void Dispose()
-    {
-        ApplicationInsights.StopTrackPage("MakeCompleteReservation");
-    }
-
 
     public class OrderModelFluentValidator : AbstractValidator<OrderModel>
     {

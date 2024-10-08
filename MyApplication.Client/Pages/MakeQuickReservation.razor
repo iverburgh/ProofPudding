@@ -1,5 +1,8 @@
 ﻿@page "/makequickreservation"
 
+@inject IApplicationInsights ApplicationInsights
+@using BlazorApplicationInsights.Interfaces
+@using BlazorApplicationInsights.Models
 @using FluentValidation
 
 <MudCard>
@@ -40,9 +43,7 @@
     protected override void OnInitialized()
     {
         model = new OrderModel();
-        // _sessionGuid = Guid.NewGuid();
-        // _dateTimeOfInit = DateTimeOffset.UtcNow;
-        // _logger.LogInformation("MakeQuickReservation - SessionGuid:{SessionGuid}: Make quick reservation started at {SessionFinished} for client with IP Address: {IpAddress}", _sessionGuid, _dateTimeOfInit, "123456");
+        ApplicationInsights.StartTrackEvent("MakQuickReservation Valid");
     }
 
 
@@ -52,9 +53,13 @@
 
         if (form.IsValid)
         {
-            // var totalTimeInSeconds = (DateTimeOffset.UtcNow - _dateTimeOfInit).TotalSeconds;
-            // _logger.LogInformation("MakeQuickReservation - SessionGuid:{SessionGuid}: TotalTimeInSeconds: \"{TotalSessionTimeInSeconds}\"", _sessionGuid, totalTimeInSeconds);
+            await ApplicationInsights.StopTrackEvent("MakQuickReservation Valid");
             NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            await ApplicationInsights.StopTrackEvent("MakQuickReservation Valid", new Dictionary<string, object?>(){{ "invalid", null }});
+            await ApplicationInsights.StartTrackEvent("MakQuickReservation Valid");
         }
     }
 
