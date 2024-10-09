@@ -1,8 +1,32 @@
 customEvents
 | extend Duration = todouble(customDimensions.duration) / 1000
+, PlayerName = customDimensions.name
+, Validated = customDimensions.validated
+, IsValid = customDimensions.valid
+| where Validated == true and IsValid == true
+| summarize count() by name
+
+customEvents
+| extend Duration = todouble(customDimensions.duration) / 1000
+, PlayerName = customDimensions.name
+, Validated = customDimensions.validated
+, IsValid = customDimensions.valid
+| where Validated == true and IsValid == true
 | summarize avg(Duration) by name
 | render barchart 
 
 customEvents
 | extend Duration = todouble(customDimensions.duration) / 1000
+, PlayerName = customDimensions.name
+, Validated = customDimensions.validated
+, IsValid = customDimensions.valid
+| where Validated == true and IsValid == true
 | summarize count(), avg(Duration), max(Duration), min(Duration) by name
+
+customEvents
+| extend Duration = todouble(customDimensions.duration) / 1000
+, PlayerName = customDimensions.name
+, Validated = customDimensions.validated
+, IsValid = customDimensions.valid
+| where Validated == true and IsValid == true
+| summarize arg_max(Duration, customDimensions.name) by name

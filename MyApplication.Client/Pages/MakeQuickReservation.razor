@@ -43,7 +43,7 @@
     protected override void OnInitialized()
     {
         model = new OrderModel();
-        ApplicationInsights.StartTrackEvent("MakQuickReservation Valid");
+        ApplicationInsights.StartTrackEvent("MakQuickReservation");
     }
 
 
@@ -53,14 +53,19 @@
 
         if (form.IsValid)
         {
-            await ApplicationInsights.StopTrackEvent("MakQuickReservation Valid");
+            await ApplicationInsights.StopTrackEvent("MakQuickReservation", new Dictionary<string, object?>() { { "name", model.Name }, { "validated", true }, { "valid", true } });
             NavigationManager.NavigateTo("/");
         }
         else
         {
-            await ApplicationInsights.StopTrackEvent("MakQuickReservation Valid", new Dictionary<string, object?>(){{ "invalid", null }});
-            await ApplicationInsights.StartTrackEvent("MakQuickReservation Valid");
+            await ApplicationInsights.StopTrackEvent("MakQuickReservation", new Dictionary<string, object?>() { { "name", model.Name }, { "validated", true }, { "valid", false } });
+            await ApplicationInsights.StartTrackEvent("MakQuickReservation");
         }
+    }
+
+    public void Dispose()
+    {
+        ApplicationInsights.StopTrackEvent("MakQuickReservation", new Dictionary<string, object?>() { { "name", model.Name }, { "validated", false }, { "valid", false } });
     }
 
     public class OrderModel

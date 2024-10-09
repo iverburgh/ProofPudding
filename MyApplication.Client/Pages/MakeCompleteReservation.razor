@@ -85,7 +85,7 @@
     protected override void OnInitialized()
     {
         model = new OrderModel();
-        ApplicationInsights.StartTrackEvent("MakeCompleteReservation Valid");
+        ApplicationInsights.StartTrackEvent("MakeCompleteReservation");
     }
     
     protected async Task Submit()
@@ -94,14 +94,19 @@
 
         if (form.IsValid)
         {
-            await ApplicationInsights.StopTrackEvent("MakeCompleteReservation Valid");
+            await ApplicationInsights.StopTrackEvent("MakeCompleteReservation", new Dictionary<string, object?>() { { "name", model.Name }, { "validated", true }, { "valid", true } });
             NavigationManager.NavigateTo("/");
         }
         else
         {
-            await ApplicationInsights.StopTrackEvent("MakeCompleteReservation Valid", new Dictionary<string, object?>() { { "invalid", null } });
-            await ApplicationInsights.StartTrackEvent("MakeCompleteReservation Valid");
+            await ApplicationInsights.StopTrackEvent("MakeCompleteReservation", new Dictionary<string, object?>() { { "name", model.Name }, { "validated", true }, { "valid", false } });
+            await ApplicationInsights.StartTrackEvent("MakeCompleteReservation");
         }
+    }
+
+    public void Dispose()
+    {
+        ApplicationInsights.StopTrackEvent("MakeCompleteReservation", new Dictionary<string, object?>() { { "name", model.Name }, { "validated", false }, { "valid", false } });
     }
 
     public class OrderModelFluentValidator : AbstractValidator<OrderModel>
