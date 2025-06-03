@@ -29,4 +29,4 @@ customEvents
 , Validated = customDimensions.validated
 , IsValid = customDimensions.valid
 | where Validated == true and IsValid == true
-| summarize arg_max(Duration, customDimensions.name) by name
+| summarize arg_min(Duration, customDimensions.name) by name
